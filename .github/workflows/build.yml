@@ -30,14 +30,22 @@ jobs:
       - name: Build with Gradle
         env:
           GRADLE_OPTS: "-Xmx2048m"
-        run: gradle assembleDebug --stacktrace 2>&1 | tee build_output.log
+        run: |
+          gradle assembleDebug --stacktrace --no-daemon > build_output.log 2>&1
+          BUILD_EXIT=$?
+          echo "BUILD_EXIT=$BUILD_EXIT" >> $GITHUB_OUTPUT
+          exit $BUILD_EXIT
+        id: gradle-build
 
-      - name: Show last 100 lines of build output
-        if: failure()
-        run: tail -100 build_output.log
+      - name: Display build output
+        if: always()
+        run: |
+          echo "=== Build Output ==="
+          cat build_output.log
+          echo "=== End Build Output ==="
 
-      - name: Upload build log on failure
-        if: failure()
+      - name: Upload build log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-log
