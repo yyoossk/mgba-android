@@ -23,16 +23,16 @@ android {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
 
-        // CMakeの設定
-        externalNativeBuild {
-            cmake {
-                cppFlags.add("-std=c++17")
-                cppFlags.add("-fexceptions")
-                cppFlags.add("-frtti")
-                arguments.add("-DANDROID_STL=c++_shared")
-                arguments.add("-DMGBA_CORE_ONLY=ON")
-            }
-        }
+        // CMakeの設定 - 一時的に無効化（デバッグ用）
+        // externalNativeBuild {
+        //     cmake {
+        //         cppFlags.add("-std=c++17")
+        //         cppFlags.add("-fexceptions")
+        //         cppFlags.add("-frtti")
+        //         arguments.add("-DANDROID_STL=c++_shared")
+        //         arguments.add("-DMGBA_CORE_ONLY=ON")
+        //     }
+        // }
     }
 
     buildTypes {
@@ -65,13 +65,13 @@ android {
         shaders = false
     }
 
-    // CMake設定
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/jni/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
+    // CMake設定 - 一時的に無効化（デバッグ用）
+    // externalNativeBuild {
+    //     cmake {
+    //         path = file("src/main/jni/CMakeLists.txt")
+    //         version = "3.22.1"
+    //     }
+    // }
 
     packaging {
         resources {
