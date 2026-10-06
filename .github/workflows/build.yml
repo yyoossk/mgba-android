@@ -30,6 +30,23 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Verify project setup
+        run: |
+          echo "=== Java Version ==="
+          java -version
+          echo ""
+          echo "=== Gradle Version ==="
+          gradle --version
+          echo ""
+          echo "=== Project Structure ==="
+          ls -la
+          echo ""
+          echo "=== App Build File ==="
+          head -20 app/build.gradle.kts
+          echo ""
+          echo "=== Settings File ==="
+          cat settings.gradle.kts
+
       - name: Build with Gradle
         env:
           GRADLE_OPTS: "-Xmx2048m"
