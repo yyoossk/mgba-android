@@ -3,6 +3,7 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven(url = "https://repo.gradle.org/gradle/libs-releases")
     }
 }
 

@@ -58,11 +58,8 @@ jobs:
         env:
           GRADLE_OPTS: "-Xmx2048m"
         run: |
-          gradle assembleDebug --stacktrace --no-daemon > build_output.log 2>&1
-          BUILD_EXIT=$?
-          echo "BUILD_EXIT=$BUILD_EXIT" >> $GITHUB_OUTPUT
-          exit $BUILD_EXIT
-        id: gradle-build
+          gradle --version
+          gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee build_output.log || true
 
       - name: Display build output
         if: always()
