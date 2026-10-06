@@ -38,8 +38,6 @@ set(MGBA_ALL_SOURCES
 # JNIラッパー
 set(JNI_SOURCES
     mgba_jni.c
-    emulator_bridge.c
-    audio_callback.c
 )
 
 # ネイティブライブラリ作成
