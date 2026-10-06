@@ -16,18 +16,14 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
 
 # mGBAコアのソースファイル
 file(GLOB_RECURSE MGBA_CORE_SOURCES
-    "mgba/src/core/*.c"
+    "mgba/core/*.c"
     "mgba/arm/*.c"
 )
 
-# ユーティリティ関数
-file(GLOB_RECURSE MGBA_UTIL_SOURCES
+# ユーティリティ関数 - util ディレクトリの直下のみ
+file(GLOB MGBA_UTIL_SOURCES
     "mgba/util/*.c"
 )
-
-# テストファイルは除外
-list(FILTER MGBA_UTIL_SOURCES EXCLUDE REGEX "test/")
-list(FILTER MGBA_UTIL_SOURCES EXCLUDE REGEX "gui/")
 
 # 全ソースをまとめる
 set(MGBA_ALL_SOURCES
