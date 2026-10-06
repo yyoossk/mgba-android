@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- パーミッション -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Android 13以上のファイルアクセス権限 -->
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_AUDIO"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_IMAGES"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_VIDEO"
+        android:maxSdkVersion="32" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.MGBAEmulator"
+        android:supportsRtl="true"
+        tools:targetApi="31">
+
+        <!-- ゲームローダー（ランチャー） -->
+        <activity
+            android:name=".GameLoaderActivity"
+            android:exported="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- メインエミュレータ画面 -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+            android:windowSoftInputMode="adjustNothing" />
+
+        <!-- ファイルピッカーの種類 -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

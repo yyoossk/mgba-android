@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">mGBA Emulator</string>
+    <string name="btn_select_game">Select Game</string>
+    <string name="btn_pause">Pause</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_load">Load</string>
+</resources>
