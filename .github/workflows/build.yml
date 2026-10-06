@@ -1,0 +1,16 @@
+name: Build mGBA Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build APK
+    uses: yyoossk/android-build-env/.github/workflows/android-build.yml@main
+    with:
+      ndk-version: "25.1.8937393"
+      cmake-version: "3.22.1"
