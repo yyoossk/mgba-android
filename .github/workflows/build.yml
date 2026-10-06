@@ -30,6 +30,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Setup Gradle Wrapper
+        run: |
+          echo "Generating Gradle Wrapper..."
+          gradle wrapper --gradle-version 8.4 --no-daemon || echo "Wrapper generation attempted"
+
       - name: Verify project setup
         run: |
           echo "=== Java Version ==="
@@ -38,14 +43,16 @@ jobs:
           echo "=== Gradle Version ==="
           gradle --version
           echo ""
+          echo "=== Gradle Wrapper Status ==="
+          if [ -f "gradlew" ]; then
+            echo "Gradle wrapper exists"
+            ls -lh gradlew gradle-wrapper.jar
+          else
+            echo "Gradle wrapper NOT found"
+          fi
+          echo ""
           echo "=== Project Structure ==="
           ls -la
-          echo ""
-          echo "=== App Build File ==="
-          head -20 app/build.gradle.kts
-          echo ""
-          echo "=== Settings File ==="
-          cat settings.gradle.kts
 
       - name: Build with Gradle
         env:
