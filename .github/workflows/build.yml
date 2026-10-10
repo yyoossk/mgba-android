@@ -9,7 +9,5 @@ jobs:
   build:
     uses: yyoossk/android-build-env/.github/workflows/android-build.yml@main
     with:
-      gradle-version: '8.4'
       ndk-version: '25.1.8937393'
       cmake-version: '3.22.1'
-      gradle-task: 'assembleDebug'
