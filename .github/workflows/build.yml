@@ -7,47 +7,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
-
-      - name: Install NDK and CMake
-        run: |
-          yes | sdkmanager "ndk;25.1.8937393" "cmake;3.22.1"
-          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/25.1.8937393" >> $GITHUB_ENV
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Build APK
-        run: |
-          if [ -f ./gradlew ]; then
-            chmod +x ./gradlew
-            ./gradlew assembleDebug --stacktrace
-          else
-            gradle assembleDebug --stacktrace
-          fi
-          echo "=== Build artifacts ==="
-          find . -name "*.apk" -type f
-          echo "=== Build outputs directory ==="
-          ls -laR app/build/outputs/ || echo "No outputs directory found"
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: apk
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+    uses: yyoossk/android-build-env/.github/workflows/android-build.yml@main
+    with:
+      ndk-version: '25.1.8937393'
+      cmake-version: '3.22.1'
+      gradle-version: '8.7'
+      java-version: '17'
 
   release:
     needs: build
