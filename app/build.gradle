@@ -7,17 +7,10 @@ android {
 
     defaultConfig {
         applicationId = 'com.mgba.emulator'
-        minSdk 24
+        minSdk 21
         targetSdk 34
         versionCode 1
         versionName '1.0.0'
-    }
-
-    externalNativeBuild {
-        cmake {
-            path "src/main/jni/CMakeLists.txt"
-            version "3.22.1"
-        }
     }
 
     buildTypes {
