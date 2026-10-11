@@ -47,6 +47,17 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Debug Gradle and Android
+        run: |
+          echo "=== Gradle version ==="
+          gradle --version
+          echo "=== Java version ==="
+          java -version
+          echo "=== Android SDK version ==="
+          ls -la $ANDROID_SDK_ROOT/platforms/ | head -5
+          echo "=== Contents of app/src/main ==="
+          find app/src/main -type f -name "*.kt" -o -name "*.java" | head -10
+
       - name: Build
         run: |
           echo "=== Environment variables ===" | tee build.log
@@ -66,7 +77,19 @@ jobs:
 
           # APK 確認
           echo "=== APK generation check ===" | tee -a build.log
+          APK_COUNT=$(find app/build/outputs -name "*.apk" 2>/dev/null | wc -l)
+          echo "Found $APK_COUNT APK files" | tee -a build.log
           find app/build/outputs -name "*.apk" 2>/dev/null | tee -a build.log || echo "No APK found" | tee -a build.log
+
+          echo "=== Directory structure ===" | tee -a build.log
+          find app/build -type d -name outputs 2>/dev/null | tee -a build.log
+          ls -laR app/build/outputs/ 2>&1 | tee -a build.log || echo "No build/outputs directory" | tee -a build.log
+
+          # Fail if no APK found AND gradle succeeded
+          if [ $BUILD_EXIT -eq 0 ] && [ $APK_COUNT -eq 0 ]; then
+            echo "ERROR: Gradle succeeded but no APK was generated!" | tee -a build.log
+            exit 1
+          fi
 
           exit $BUILD_EXIT
 
