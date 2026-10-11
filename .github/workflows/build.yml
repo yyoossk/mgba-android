@@ -28,12 +28,19 @@ jobs:
           NDK: '27.0.12212155'
           CMAKE: '3.22.1'
         run: |
+          echo "=== Android SDK Path ==="
+          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+          echo "=== Listing available NDK versions ==="
+          sdkmanager --list | grep ndk || echo "No NDK versions found in list"
+          echo "=== Installing packages ==="
           pkgs=()
           [ -n "$NDK" ] && pkgs+=("ndk;$NDK")
           [ -n "$CMAKE" ] && pkgs+=("cmake;$CMAKE")
-          yes | sdkmanager "${pkgs[@]}" > /dev/null
+          yes | sdkmanager "${pkgs[@]}"
           if [ -n "$NDK" ]; then
             echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK" >> "$GITHUB_ENV"
+            echo "=== Verifying NDK installation ==="
+            ls -la "$ANDROID_SDK_ROOT/ndk/" || echo "NDK directory not found"
           fi
 
       - name: Set up Gradle
