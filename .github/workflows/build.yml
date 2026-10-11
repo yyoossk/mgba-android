@@ -18,16 +18,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
 
       - name: Install NDK and CMake
         run: |
-          yes | sdkmanager "ndk;25.1.8937393" "cmake;3.22.1" > /dev/null
+          yes | sdkmanager "ndk;25.1.8937393" "cmake;3.22.1"
           echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/25.1.8937393" >> $GITHUB_ENV
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@latest
 
       - name: Build APK
         run: |
