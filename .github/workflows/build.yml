@@ -48,16 +48,24 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build
-        run: gradle assembleDebug --stacktrace -x lint 2>&1 | tee build.log
+        run: |
+          echo "=== Starting Gradle build ===" | tee build.log
+          gradle assembleDebug --stacktrace -x lint 2>&1 | tee -a build.log
+          BUILD_EXIT=$?
+          echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
+          exit $BUILD_EXIT
 
       - name: Show build result
         if: always()
         run: |
-          echo "=== Gradle command exit code: $?"
+          echo "=== CMake build status ==="
+          ls -la app/build/intermediates/cmake/ 2>/dev/null || echo "No CMake intermediates found"
+          echo "=== Looking for CMake errors ==="
+          grep -i "error\|failed" build.log | head -20 || echo "No error patterns found in build.log"
           echo "=== Checking for APK files ==="
           find . -name "*.apk" 2>/dev/null || echo "No APK files found"
           echo "=== Tail of build.log ==="
-          tail -50 build.log
+          tail -100 build.log
 
       - name: Check APK location
         if: always()
