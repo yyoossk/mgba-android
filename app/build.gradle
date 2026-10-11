@@ -17,28 +17,11 @@ android {
         versionName = '1.0.0'
 
         testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
-
-        // NDK設定
-        ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-        }
-
-        // CMakeの設定 - 一時的に無効化（デバッグ用）
-        // externalNativeBuild {
-        //     cmake {
-        //         cppFlags = ['-std=c++17', '-fexceptions', '-frtti']
-        //         arguments = ['-DANDROID_STL=c++_shared', '-DMGBA_CORE_ONLY=ON']
-        //     }
-        // }
     }
 
     buildTypes {
         release {
-            minifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile('proguard-android-optimize.txt'),
-                'proguard-rules.pro'
-            )
+            minifyEnabled = false
         }
         debug {
             minifyEnabled = false
@@ -56,19 +39,7 @@ android {
 
     buildFeatures {
         viewBinding = true
-        aidl = false
-        renderScript = false
-        resValues = false
-        shaders = false
     }
-
-    // CMake設定 - 一時的に無効化（デバッグ用）
-    // externalNativeBuild {
-    //     cmake {
-    //         path = file('src/main/jni/CMakeLists.txt')
-    //         version = '3.22.1'
-    //     }
-    // }
 
     packaging {
         resources {
