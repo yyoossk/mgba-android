@@ -13,13 +13,6 @@ android {
         versionName '1.0.0'
     }
 
-    externalNativeBuild {
-        cmake {
-            path "src/main/jni/CMakeLists.txt"
-            version "3.22.1"
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled false

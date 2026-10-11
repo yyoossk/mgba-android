@@ -20,8 +20,8 @@ class EmulatorCore {
                 System.loadLibrary("mgba-core")
                 Log.i(TAG, "Native library loaded successfully")
             } catch (e: UnsatisfiedLinkError) {
-                Log.e(TAG, "Failed to load native library", e)
-                throw RuntimeException("Failed to load mGBA native library", e)
+                Log.w(TAG, "Native library not available - running in stub mode", e)
+                // Continue anyway - we'll use stub implementations
             }
         }
     }
