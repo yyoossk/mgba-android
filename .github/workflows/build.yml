@@ -29,15 +29,18 @@ jobs:
 
       - name: Prepare APK for release
         run: |
-          cd ./apk-artifact
-          APK_FILE=$(ls -1 *.apk | head -1)
-          if [ -z "$APK_FILE" ]; then
+          echo "=== Contents of apk-artifact ==="
+          find ./apk-artifact -type f | head -20
+          echo "=== Finding APK files ==="
+          APK_FILES=$(find ./apk-artifact -name "*.apk" -type f)
+          if [ -z "$APK_FILES" ]; then
             echo "APK not found in artifact"
             exit 1
           fi
+          APK_FILE=$(echo "$APK_FILES" | head -1)
           echo "Found APK: $APK_FILE"
-          cp "$APK_FILE" ../app-release.apk
-          ls -lh ../app-release.apk
+          cp "$APK_FILE" ./app-release.apk
+          ls -lh ./app-release.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
