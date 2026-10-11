@@ -28,19 +28,24 @@ jobs:
           NDK: '27.0.12212155'
           CMAKE: '3.22.1'
         run: |
-          echo "=== Android SDK Path ==="
-          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
-          echo "=== Listing available NDK versions ==="
-          sdkmanager --list | grep ndk || echo "No NDK versions found in list"
-          echo "=== Installing packages ==="
+          set -o pipefail
+          echo "=== Android SDK Path ===" | tee -a setup.log
+          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT" | tee -a setup.log
+          echo "=== Listing available NDK versions ===" | tee -a setup.log
+          sdkmanager --list 2>&1 | grep -i ndk | tee -a setup.log || echo "No NDK versions found in list" | tee -a setup.log
+          echo "=== Installing packages ===" | tee -a setup.log
           pkgs=()
           [ -n "$NDK" ] && pkgs+=("ndk;$NDK")
           [ -n "$CMAKE" ] && pkgs+=("cmake;$CMAKE")
-          yes | sdkmanager "${pkgs[@]}"
+          echo "Packages to install: ${pkgs[@]}" | tee -a setup.log
+          if ! yes | sdkmanager "${pkgs[@]}" 2>&1 | tee -a setup.log; then
+            echo "ERROR: sdkmanager failed" | tee -a setup.log
+            exit 1
+          fi
           if [ -n "$NDK" ]; then
             echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK" >> "$GITHUB_ENV"
-            echo "=== Verifying NDK installation ==="
-            ls -la "$ANDROID_SDK_ROOT/ndk/" || echo "NDK directory not found"
+            echo "=== Verifying NDK installation ===" | tee -a setup.log
+            ls -la "$ANDROID_SDK_ROOT/ndk/" 2>&1 | tee -a setup.log || echo "NDK directory not found" | tee -a setup.log
           fi
 
       - name: Set up Gradle
@@ -69,6 +74,14 @@ jobs:
           ls -laR app/build/outputs/ 2>/dev/null || echo "No build/outputs directory"
           echo "=== Full app/build structure ==="
           find app/build -type d 2>/dev/null | head -30
+
+      - name: Upload Setup Log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: setup-log
+          path: setup.log
+          if-no-files-found: ignore
 
       - name: Upload Build Log
         if: always()
