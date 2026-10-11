@@ -38,14 +38,14 @@ jobs:
 
       - name: Upload Build Log
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Build Log
           path: build.log
 
       - name: Upload APK
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mGBA Emulator Debug APK
           path: app/build/outputs/apk/debug/
