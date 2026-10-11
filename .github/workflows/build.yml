@@ -23,27 +23,64 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build APK with Gradle
+      - name: Show Environment
         run: |
-          gradle assembleDebug --stacktrace -v
+          echo "=== Environment ==="
+          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          echo ""
+          echo "=== Java version ==="
+          java -version
+          echo ""
+          echo "=== Gradle version ==="
+          gradle --version
+          echo ""
+          echo "=== Android SDK contents ==="
+          ls -la "$ANDROID_SDK_ROOT/" | head -20
+
+      - name: Create gradle.properties
+        run: |
+          cat > ~/.gradle/gradle.properties << 'EOF'
+          org.gradle.jvmargs=-Xmx4096m
+          org.gradle.daemon=false
+          android.useAndroidX=true
+          android.enableJetifier=true
+          EOF
+          cat ~/.gradle/gradle.properties
+
+      - name: Build APK
+        run: |
+          gradle assembleDebug --info 2>&1 | tee build.log
 
       - name: Check for APK
         if: always()
         run: |
-          echo "=== Searching for APK files ==="
-          find . -name "*.apk" -type f -exec ls -lh {} \;
-          APK_FILES=$(find . -name "*.apk" -type f)
-          APK_COUNT=$(echo "$APK_FILES" | grep -c ".*" || echo "0")
-          echo "Found $APK_COUNT APK file(s)"
-          if [ $APK_COUNT -eq 0 ]; then
-            echo "ERROR: No APK generated"
+          echo "=== APK Search ==="
+          find . -name "*.apk" -type f | tee apk-files.txt || true
+          if [ ! -s apk-files.txt ]; then
+            echo "ERROR: No APK files found"
+            echo ""
+            echo "=== Build Log (last 200 lines) ==="
+            tail -200 build.log || true
             exit 1
           fi
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            build.log
+            apk-files.txt
+            app/build/outputs/
+          if-no-files-found: ignore
 
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: app-debug-apk
           path: 'app/build/outputs/apk/debug/*.apk'
           if-no-files-found: error
