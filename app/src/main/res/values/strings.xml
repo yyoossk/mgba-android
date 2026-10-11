@@ -20,4 +20,40 @@
     <string name="save_failed">セーブに失敗しました</string>
     <string name="game_loaded">ゲームをロードしました</string>
     <string name="load_failed">ロードに失敗しました</string>
+
+    <!-- SettingsFragment -->
+    <string name="menu_settings">設定</string>
+    <string name="video_settings">ビデオ設定</string>
+    <string name="audio_settings">オーディオ設定</string>
+    <string name="input_settings">入力設定</string>
+    <string name="aspect_ratio">アスペクト比</string>
+    <string name="aspect_ratio_desc">画面の比率</string>
+    <string name="frame_skip">フレームスキップ</string>
+    <string name="shader">シェーダー</string>
+    <string name="shader_default">デフォルト</string>
+    <string name="master_volume">マスターボリューム</string>
+    <string name="sample_rate">サンプルレート</string>
+    <string name="high_pass_filter">ハイパスフィルター</string>
+    <string name="high_pass_filter_desc">高周波ノイズを削除</string>
+    <string name="haptic_feedback">触覚フィードバック</string>
+    <string name="haptic_feedback_desc">ボタン押下時の振動</string>
+
+    <!-- CheatsFragment -->
+    <string name="cheats">チート</string>
+    <string name="cheats_desc">GameSharkコードを管理</string>
+    <string name="cheat_code_hint">チートコードを入力</string>
+    <string name="add_cheat">追加</string>
+    <string name="cheat_added">チートを追加しました</string>
+    <string name="cheat_add_failed">チート追加に失敗</string>
+
+    <!-- SavesFragment -->
+    <string name="save_states">セーブスロット</string>
+    <string name="save_states_desc">複数のセーブスロットを管理</string>
+    <string name="slot">スロット</string>
+    <string name="save_slot_empty">空のスロット</string>
+    <string name="delete">削除</string>
+    <string name="delete_failed">削除に失敗しました</string>
+    <string name="save_slot_saved">スロット</string>
+    <string name="save_slot_loaded">スロット</string>
+    <string name="save_slot_deleted">スロット</string>
 </resources>

@@ -20,4 +20,40 @@
     <string name="save_failed">Save failed</string>
     <string name="game_loaded">Game loaded</string>
     <string name="load_failed">Load failed</string>
+
+    <!-- SettingsFragment -->
+    <string name="menu_settings">Settings</string>
+    <string name="video_settings">Video Settings</string>
+    <string name="audio_settings">Audio Settings</string>
+    <string name="input_settings">Input Settings</string>
+    <string name="aspect_ratio">Aspect Ratio</string>
+    <string name="aspect_ratio_desc">Screen aspect ratio</string>
+    <string name="frame_skip">Frame Skip</string>
+    <string name="shader">Shader</string>
+    <string name="shader_default">Default</string>
+    <string name="master_volume">Master Volume</string>
+    <string name="sample_rate">Sample Rate</string>
+    <string name="high_pass_filter">High Pass Filter</string>
+    <string name="high_pass_filter_desc">Remove high frequency noise</string>
+    <string name="haptic_feedback">Haptic Feedback</string>
+    <string name="haptic_feedback_desc">Vibration on button press</string>
+
+    <!-- CheatsFragment -->
+    <string name="cheats">Cheats</string>
+    <string name="cheats_desc">Manage GameShark codes</string>
+    <string name="cheat_code_hint">Enter cheat code</string>
+    <string name="add_cheat">Add</string>
+    <string name="cheat_added">Cheat added</string>
+    <string name="cheat_add_failed">Failed to add cheat</string>
+
+    <!-- SavesFragment -->
+    <string name="save_states">Save States</string>
+    <string name="save_states_desc">Manage multiple save slots</string>
+    <string name="slot">Slot</string>
+    <string name="save_slot_empty">Empty slot</string>
+    <string name="delete">Delete</string>
+    <string name="delete_failed">Delete failed</string>
+    <string name="save_slot_saved">Slot</string>
+    <string name="save_slot_loaded">Slot</string>
+    <string name="save_slot_deleted">Slot</string>
 </resources>

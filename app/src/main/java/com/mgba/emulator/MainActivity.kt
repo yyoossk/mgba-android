@@ -10,15 +10,21 @@ import android.view.KeyEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
 
 /**
- * メインエミュレータ画面
+ * メインエミュレータ画面（Fragment-based architecture）
  */
 class MainActivity : AppCompatActivity() {
 
@@ -27,16 +33,88 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnPause: Button
     private lateinit var btnSave: Button
     private lateinit var btnLoad: Button
+    private lateinit var bottomNavigation: BottomNavigationView
+    private lateinit var fragmentContainer: FrameLayout
 
     private var renderingJob: Job? = null
     private var currentRomPath: String? = null
+    private var currentFragment: Fragment? = null
+
+    enum class Screen {
+        GAME, SETTINGS, CHEATS, SAVES
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        // Create main layout
+        val mainLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+
+        // Create game screen container
+        val gameScreenLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        }
 
         // UIコンポーネント初期化
-        initializeUI()
+        initializeGameUI(gameScreenLayout)
+
+        // Fragment container
+        fragmentContainer = FrameLayout(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+            id = android.view.View.generateViewId()
+            visibility = android.view.View.GONE
+        }
+
+        // Bottom navigation
+        bottomNavigation = BottomNavigationView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+
+            // Create menu items programmatically
+            val menu = this.menu
+            menu.add(0, 1, 0, getString(R.string.app_name))
+                .setIcon(android.R.drawable.ic_dialog_info)
+            menu.add(0, 2, 1, getString(R.string.menu_settings))
+                .setIcon(android.R.drawable.ic_menu_manage)
+            menu.add(0, 3, 2, getString(R.string.cheats))
+                .setIcon(android.R.drawable.ic_menu_view)
+            menu.add(0, 4, 3, getString(R.string.save_states))
+                .setIcon(android.R.drawable.ic_menu_save)
+
+            setOnItemSelectedListener { item ->
+                when (item.itemId) {
+                    1 -> showScreen(Screen.GAME)
+                    2 -> showScreen(Screen.SETTINGS)
+                    3 -> showScreen(Screen.CHEATS)
+                    4 -> showScreen(Screen.SAVES)
+                    else -> false
+                }
+            }
+        }
+
+        // Add views to main layout
+        mainLayout.addView(gameScreenLayout)
+        mainLayout.addView(fragmentContainer)
+        mainLayout.addView(bottomNavigation)
+
+        setContentView(mainLayout)
 
         // エミュレータコア初期化
         emulatorCore = EmulatorCore()
@@ -54,16 +132,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initializeUI() {
-        surfaceView = findViewById(R.id.surface_view)
-        btnPause = findViewById(R.id.btn_pause)
-        btnSave = findViewById(R.id.btn_save)
-        btnLoad = findViewById(R.id.btn_load)
+    private fun initializeGameUI(container: LinearLayout) {
+        surfaceView = SurfaceView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        }
 
-        // ボタンリスナー設定
-        btnPause.setOnClickListener { togglePause() }
-        btnSave.setOnClickListener { saveGame() }
-        btnLoad.setOnClickListener { loadGame() }
+        val controlLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            setPadding(8, 8, 8, 8)
+        }
+
+        btnPause = Button(this).apply {
+            text = getString(R.string.btn_pause)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            setOnClickListener { togglePause() }
+        }
+
+        btnSave = Button(this).apply {
+            text = getString(R.string.btn_save)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            setOnClickListener { saveGame() }
+        }
+
+        btnLoad = Button(this).apply {
+            text = getString(R.string.btn_load)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            setOnClickListener { loadGame() }
+        }
+
+        controlLayout.addView(btnPause)
+        controlLayout.addView(btnSave)
+        controlLayout.addView(btnLoad)
+
+        container.addView(surfaceView)
+        container.addView(controlLayout)
 
         // SurfaceView設定
         surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
@@ -83,6 +193,42 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun showScreen(screen: Screen): Boolean {
+        return when (screen) {
+            Screen.GAME -> {
+                fragmentContainer.visibility = android.view.View.GONE
+                surfaceView.visibility = android.view.View.VISIBLE
+                startRendering()
+                true
+            }
+            Screen.SETTINGS -> {
+                showFragment(SettingsFragment.newInstance())
+                true
+            }
+            Screen.CHEATS -> {
+                showFragment(CheatsFragment.newInstance())
+                true
+            }
+            Screen.SAVES -> {
+                showFragment(SavesFragment.newInstance())
+                true
+            }
+        }
+    }
+
+    private fun showFragment(fragment: Fragment) {
+        currentFragment = fragment
+        surfaceView.visibility = android.view.View.GONE
+        stopRendering()
+        fragmentContainer.visibility = android.view.View.VISIBLE
+
+        supportFragmentManager.commit {
+            replace(fragmentContainer.id, fragment)
+        }
+    }
+
+    fun getEmulatorCore(): EmulatorCore = emulatorCore
 
     private fun loadAndStartROM(romPath: String) {
         lifecycleScope.launch {

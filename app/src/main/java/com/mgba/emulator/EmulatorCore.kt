@@ -44,6 +44,35 @@ class EmulatorCore {
     private external fun nativeLoadState(savePath: String): Int
     private external fun nativeDestroy()
 
+    // ========== ビデオ設定 ==========
+    private external fun nativeSetShader(shaderType: Int): Int
+    private external fun nativeSetAspectRatio(ratio: Float): Int
+    private external fun nativeSetFrameSkip(skip: Int): Int
+    private external fun nativeSetBackgroundColor(color: Int): Int
+    private external fun nativeTakeScreenshot(outputPath: String): Int
+
+    // ========== オーディオ設定 ==========
+    private external fun nativeSetMasterVolume(volume: Int): Int
+    private external fun nativeSetChannelVolume(channel: Int, volume: Int): Int
+    private external fun nativeSetSampleRate(sampleRate: Int): Int
+    private external fun nativeSetHighPassFilter(enabled: Boolean): Int
+
+    // ========== 高速化機能 ==========
+    private external fun nativeSetFastForward(enabled: Boolean): Int
+    private external fun nativeSetSlowMotion(speed: Float): Int
+
+    // ========== チート機能 ==========
+    private external fun nativeAddCheat(code: String): Int
+    private external fun nativeRemoveCheat(index: Int): Int
+    private external fun nativeEnableCheat(index: Int, enabled: Boolean): Int
+    private external fun nativeGetCheatCount(): Int
+    private external fun nativeGetCheatCode(index: Int): String?
+
+    // ========== セーブスロット管理 ==========
+    private external fun nativeSaveStateSlot(slot: Int): Int
+    private external fun nativeLoadStateSlot(slot: Int): Int
+    private external fun nativeDeleteStateSlot(slot: Int): Int
+
     // ========== パブリックインターフェース ==========
 
     /**
@@ -199,6 +228,221 @@ class EmulatorCore {
             Log.i(TAG, "Emulator destroyed")
         } catch (e: Exception) {
             Log.e(TAG, "Destroy failed", e)
+        }
+    }
+
+    // ========== ビデオ設定実装 ==========
+
+    fun setShader(shaderType: Int): Boolean {
+        return try {
+            val result = nativeSetShader(shaderType)
+            Log.i(TAG, "Shader set to: $shaderType")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set shader failed", e)
+            false
+        }
+    }
+
+    fun setAspectRatio(ratio: Float): Boolean {
+        return try {
+            val result = nativeSetAspectRatio(ratio)
+            Log.i(TAG, "Aspect ratio set to: $ratio")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set aspect ratio failed", e)
+            false
+        }
+    }
+
+    fun setFrameSkip(skip: Int): Boolean {
+        return try {
+            val result = nativeSetFrameSkip(skip)
+            Log.i(TAG, "Frame skip set to: $skip")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set frame skip failed", e)
+            false
+        }
+    }
+
+    fun setBackgroundColor(color: Int): Boolean {
+        return try {
+            val result = nativeSetBackgroundColor(color)
+            Log.i(TAG, "Background color set")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set background color failed", e)
+            false
+        }
+    }
+
+    fun takeScreenshot(outputPath: String): Boolean {
+        return try {
+            val result = nativeTakeScreenshot(outputPath)
+            Log.i(TAG, "Screenshot saved: $outputPath")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Take screenshot failed", e)
+            false
+        }
+    }
+
+    // ========== オーディオ設定実装 ==========
+
+    fun setMasterVolume(volume: Int): Boolean {
+        return try {
+            val result = nativeSetMasterVolume(volume)
+            Log.i(TAG, "Master volume set to: $volume")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set master volume failed", e)
+            false
+        }
+    }
+
+    fun setChannelVolume(channel: Int, volume: Int): Boolean {
+        return try {
+            val result = nativeSetChannelVolume(channel, volume)
+            Log.i(TAG, "Channel $channel volume set to: $volume")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set channel volume failed", e)
+            false
+        }
+    }
+
+    fun setSampleRate(sampleRate: Int): Boolean {
+        return try {
+            val result = nativeSetSampleRate(sampleRate)
+            Log.i(TAG, "Sample rate set to: $sampleRate")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set sample rate failed", e)
+            false
+        }
+    }
+
+    fun setHighPassFilter(enabled: Boolean): Boolean {
+        return try {
+            val result = nativeSetHighPassFilter(enabled)
+            Log.i(TAG, "High pass filter set to: $enabled")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set high pass filter failed", e)
+            false
+        }
+    }
+
+    // ========== 高速化機能実装 ==========
+
+    fun setFastForward(enabled: Boolean): Boolean {
+        return try {
+            val result = nativeSetFastForward(enabled)
+            Log.i(TAG, "Fast forward: $enabled")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set fast forward failed", e)
+            false
+        }
+    }
+
+    fun setSlowMotion(speed: Float): Boolean {
+        return try {
+            val result = nativeSetSlowMotion(speed)
+            Log.i(TAG, "Slow motion speed: $speed")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Set slow motion failed", e)
+            false
+        }
+    }
+
+    // ========== チート機能実装 ==========
+
+    suspend fun addCheat(code: String): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val result = nativeAddCheat(code)
+            Log.i(TAG, "Cheat added: $code")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Add cheat failed", e)
+            false
+        }
+    }
+
+    suspend fun removeCheat(index: Int): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val result = nativeRemoveCheat(index)
+            Log.i(TAG, "Cheat removed: $index")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Remove cheat failed", e)
+            false
+        }
+    }
+
+    suspend fun enableCheat(index: Int, enabled: Boolean): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val result = nativeEnableCheat(index, enabled)
+            Log.i(TAG, "Cheat $index enabled: $enabled")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Enable cheat failed", e)
+            false
+        }
+    }
+
+    suspend fun getCheatCount(): Int = withContext(Dispatchers.IO) {
+        return@withContext try {
+            nativeGetCheatCount()
+        } catch (e: Exception) {
+            Log.e(TAG, "Get cheat count failed", e)
+            0
+        }
+    }
+
+    suspend fun getCheatCode(index: Int): String? = withContext(Dispatchers.IO) {
+        return@withContext try {
+            nativeGetCheatCode(index)
+        } catch (e: Exception) {
+            Log.e(TAG, "Get cheat code failed", e)
+            null
+        }
+    }
+
+    // ========== セーブスロット管理実装 ==========
+
+    suspend fun saveStateSlot(slot: Int): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val result = nativeSaveStateSlot(slot)
+            Log.i(TAG, "State saved to slot: $slot")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Save state slot failed", e)
+            false
+        }
+    }
+
+    suspend fun loadStateSlot(slot: Int): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val result = nativeLoadStateSlot(slot)
+            Log.i(TAG, "State loaded from slot: $slot")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Load state slot failed", e)
+            false
+        }
+    }
+
+    suspend fun deleteStateSlot(slot: Int): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val result = nativeDeleteStateSlot(slot)
+            Log.i(TAG, "State slot deleted: $slot")
+            result == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Delete state slot failed", e)
+            false
         }
     }
 }
