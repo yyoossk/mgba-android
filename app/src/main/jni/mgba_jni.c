@@ -1,31 +1,22 @@
 // app/src/main/jni/mgba_jni.c
-// JNI実装：JavaとネイティブmGBAコアの連携
+// JNI実装：JavaとネイティブmGBAコアの連携（最小化版）
 
 #include <jni.h>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
 #include <android/log.h>
 #include <pthread.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #define LOG_TAG "mGBA-JNI"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-// ========== mGBA コアの構造体（仮定）==========
-// 実際のmGBAソースから以下の定義が必要：
-// struct mCore
-// struct mCoreThread
-// enum mLogLevel
-
+// エミュレータの状態
 typedef struct {
-    void *core;                    // mCoreインスタンス
-    void *thread;                  // エミュレータスレッド
-    void *renderer;                // フレームバッファレンダラー
     int is_running;
     int frame_width;
     int frame_height;
-    uint32_t *frame_buffer;        // RGB565フレームバッファ
+    uint32_t *frame_buffer;
     pthread_mutex_t lock;
 } EmulatorState;
 
@@ -72,7 +63,6 @@ Java_com_mgba_emulator_EmulatorCore_nativeLoadROM(
     LOGI("Loading ROM: %s", path);
 
     // TODO: mGBA コアのROMロード処理
-    //例: mCoreLoadFile(emulator.core, path);
 
     (*env)->ReleaseStringUTFChars(env, rom_path, path);
     return 0;
@@ -94,9 +84,6 @@ Java_com_mgba_emulator_EmulatorCore_nativeStart(JNIEnv *env, jobject obj) {
     pthread_mutex_lock(&emulator.lock);
     emulator.is_running = 1;
     pthread_mutex_unlock(&emulator.lock);
-
-    // TODO: エミュレータスレッド開始
-    // pthread_create(&emulator.thread, NULL, emulator_thread_func, NULL);
 
     return 0;
 }
@@ -143,43 +130,32 @@ Java_com_mgba_emulator_EmulatorCore_nativeStop(JNIEnv *env, jobject obj) {
     emulator.is_running = 0;
     pthread_mutex_unlock(&emulator.lock);
 
-    // スレッド終了待機
-    // pthread_join(emulator.thread, NULL);
-
     return 0;
 }
 
 /**
  * nativeSetKeyState(int keyCode, boolean isPressed)
- * キー入力設定
+ * キー状態の設定
  */
 JNIEXPORT void JNICALL
 Java_com_mgba_emulator_EmulatorCore_nativeSetKeyState(
     JNIEnv *env, jobject obj, jint key_code, jboolean is_pressed) {
-
-    // GBA キーマッピング
-    // Key A, B, Select, Start, Right, Left, Up, Down, R, L
-
-    LOGI("Key input: code=%d pressed=%d", key_code, is_pressed);
-
-    // TODO: mGBA コアへのキー状態通知
-    // mCoreInputSetState(emulator.core, key_code, is_pressed);
+    LOGI("Key event: keyCode=%d, isPressed=%d", key_code, is_pressed);
+    // TODO: キー入力の処理
 }
 
 /**
  * nativeGetFrameBuffer()
- * フレームバッファへのポインタを取得
+ * フレームバッファアドレスを取得
  */
 JNIEXPORT jlong JNICALL
-Java_com_mgba_emulator_EmulatorCore_nativeGetFrameBuffer(
-    JNIEnv *env, jobject obj) {
-
-    return (jlong)(intptr_t)emulator.frame_buffer;
+Java_com_mgba_emulator_EmulatorCore_nativeGetFrameBuffer(JNIEnv *env, jobject obj) {
+    return (jlong)(uintptr_t)emulator.frame_buffer;
 }
 
 /**
  * nativeGetFrameWidth()
- * フレーム幅を取得
+ * フレームの幅を取得
  */
 JNIEXPORT jint JNICALL
 Java_com_mgba_emulator_EmulatorCore_nativeGetFrameWidth(JNIEnv *env, jobject obj) {
@@ -188,7 +164,7 @@ Java_com_mgba_emulator_EmulatorCore_nativeGetFrameWidth(JNIEnv *env, jobject obj
 
 /**
  * nativeGetFrameHeight()
- * フレーム高さを取得
+ * フレームの高さを取得
  */
 JNIEXPORT jint JNICALL
 Java_com_mgba_emulator_EmulatorCore_nativeGetFrameHeight(JNIEnv *env, jobject obj) {
@@ -196,8 +172,8 @@ Java_com_mgba_emulator_EmulatorCore_nativeGetFrameHeight(JNIEnv *env, jobject ob
 }
 
 /**
- * nativeSaveState(String path)
- * セーブステート作成
+ * nativeSaveState(String savePath)
+ * ゲーム状態をセーブ
  */
 JNIEXPORT jint JNICALL
 Java_com_mgba_emulator_EmulatorCore_nativeSaveState(
@@ -206,16 +182,13 @@ Java_com_mgba_emulator_EmulatorCore_nativeSaveState(
     const char *path = (*env)->GetStringUTFChars(env, save_path, NULL);
     LOGI("Saving state to: %s", path);
 
-    // TODO: mGBA セーブ処理
-    // mCoreSaveStateNamed(emulator.core, path, SAVESTATE_SCREENSHOT);
-
     (*env)->ReleaseStringUTFChars(env, save_path, path);
     return 0;
 }
 
 /**
- * nativeLoadState(String path)
- * セーブステート読み込み
+ * nativeLoadState(String savePath)
+ * ゲーム状態をロード
  */
 JNIEXPORT jint JNICALL
 Java_com_mgba_emulator_EmulatorCore_nativeLoadState(
@@ -224,25 +197,18 @@ Java_com_mgba_emulator_EmulatorCore_nativeLoadState(
     const char *path = (*env)->GetStringUTFChars(env, save_path, NULL);
     LOGI("Loading state from: %s", path);
 
-    // TODO: mGBA 読み込み処理
-    // mCoreLoadStateNamed(emulator.core, path);
-
     (*env)->ReleaseStringUTFChars(env, save_path, path);
     return 0;
 }
 
 /**
  * nativeDestroy()
- * エミュレータクリーンアップ
+ * エミュレータのクリーンアップ
  */
 JNIEXPORT void JNICALL
 Java_com_mgba_emulator_EmulatorCore_nativeDestroy(JNIEnv *env, jobject obj) {
     LOGI("Destroying emulator");
 
-    // 実行停止
-    emulator.is_running = 0;
-
-    // メモリ解放
     if (emulator.frame_buffer) {
         free(emulator.frame_buffer);
         emulator.frame_buffer = NULL;
