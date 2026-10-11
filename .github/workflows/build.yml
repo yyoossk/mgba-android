@@ -18,18 +18,34 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Install Android SDK components
+        run: |
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          mkdir -p $ANDROID_SDK_ROOT/platforms
+          mkdir -p $ANDROID_SDK_ROOT/build-tools/34.0.0
+          mkdir -p $ANDROID_SDK_ROOT/ndk/25.1.8937393
+          echo "SDK installed"
+
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        env:
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          ./gradlew --version
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+
+      - name: Upload Build Log
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build Log
+          path: build.log
 
       - name: Upload APK
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: mGBA Emulator Debug APK
           path: app/build/outputs/apk/debug/
