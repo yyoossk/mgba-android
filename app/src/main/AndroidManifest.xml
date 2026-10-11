@@ -27,15 +27,21 @@
         android:supportsRtl="true"
         tools:targetApi="31">
 
+        <!-- テストアクティビティ（ランチャー） -->
+        <activity
+            android:name=".TestActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <!-- ゲームローダー（ランチャー） -->
         <activity
             android:name=".GameLoaderActivity"
             android:exported="true"
             android:screenOrientation="landscape">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <!-- メインエミュレータ画面 -->
