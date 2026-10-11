@@ -39,16 +39,10 @@
         <!-- メインエミュレータ画面 -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
-
-        <!-- メインエミュレータ画面 -->
-        <activity
-            android:name=".MainActivity"
             android:exported="false"
             android:screenOrientation="landscape"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
             android:windowSoftInputMode="adjustNothing" />
-
 
     </application>
 
