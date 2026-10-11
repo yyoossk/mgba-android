@@ -81,6 +81,16 @@ jobs:
           ls -d $ANDROID_SDK_ROOT/cmake/3.22.1 2>&1 | tee -a build.log
 
           echo "" | tee -a build.log
+          echo "=== Gradle diagnostic info ===" | tee -a build.log
+          which gradle | tee -a build.log
+          gradle --version 2>&1 | head -5 | tee -a build.log
+          echo "JAVA_HOME=$JAVA_HOME" | tee -a build.log
+
+          echo "" | tee -a build.log
+          echo "=== Verifying local.properties ===" | tee -a build.log
+          cat local.properties | tee -a build.log
+
+          echo "" | tee -a build.log
           echo "=== Clearing gradle cache ===" | tee -a build.log
           rm -rf ~/.gradle/caches 2>&1 | tee -a build.log || true
 
