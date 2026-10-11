@@ -17,14 +17,12 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
 # mGBAコアのソースファイル
 file(GLOB_RECURSE MGBA_CORE_SOURCES
     "mgba/core/*.c"
-    "mgba/src/core/*.c"
     "mgba/arm/*.c"
 )
 
 # ユーティリティ関数 - util ディレクトリの直下のみ
 file(GLOB MGBA_UTIL_SOURCES
     "mgba/util/*.c"
-    "mgba/src/util/*.c"
 )
 
 # 全ソースをまとめる
