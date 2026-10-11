@@ -25,7 +25,7 @@ jobs:
 
       - name: Install NDK / CMake
         env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/27.0.12212155
+          ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/25.1.8937393
         run: |
           set -o pipefail
           echo "=== Checking for pre-installed NDK ===" | tee setup.log
@@ -71,42 +71,30 @@ jobs:
 
       - name: Build
         run: |
-          echo "=== Environment variables ===" | tee build.log
+          echo "=== Starting build ===" | tee build.log
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" | tee -a build.log
           echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME" | tee -a build.log
-          echo "JAVA_HOME=$JAVA_HOME" | tee -a build.log
-          echo "PATH=$PATH" | tee -a build.log
 
-          echo "=== SDK/NDK verification ===" | tee -a build.log
-          ls -la $ANDROID_SDK_ROOT/platforms/ 2>&1 | head -10 | tee -a build.log
-          ls -la $ANDROID_SDK_ROOT/ndk/ 2>&1 | tee -a build.log
+          echo "" | tee -a build.log
+          echo "=== Verifying SDK/NDK installation ===" | tee -a build.log
+          ls -d $ANDROID_SDK_ROOT/ndk/25.1.8937393 2>&1 | tee -a build.log
+          ls -d $ANDROID_SDK_ROOT/cmake/3.22.1 2>&1 | tee -a build.log
 
-          echo "=== Available gradle tasks ===" | tee -a build.log
-          gradle tasks --no-daemon 2>&1 | head -50 | tee -a build.log
-
-          echo "=== Starting Gradle assembleDebug ===" | tee -a build.log
-          gradle assembleDebug --stacktrace --no-daemon -i 2>&1 | tee -a build.log
+          echo "" | tee -a build.log
+          echo "=== Running gradle assembleDebug ===" | tee -a build.log
+          gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee -a build.log
           BUILD_EXIT=$?
+          echo "" | tee -a build.log
           echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
 
-          echo "=== Last 50 lines of gradle output ===" | tee -a build.log
-          tail -50 build.log | tee -a build.log
-
-          echo "=== Checking for specific errors ===" | tee -a build.log
-          grep -iE "ERROR:|FAILED|error generating|error compiling|cannot find|could not" build.log | head -20 | tee -a build.log
-
-          # APK 確認
-          echo "=== APK generation check ===" | tee -a build.log
+          echo "" | tee -a build.log
+          echo "=== Checking for APK files ===" | tee -a build.log
           APK_COUNT=$(find . -name "*.apk" 2>/dev/null | wc -l)
-          echo "Found $APK_COUNT APK files total in project" | tee -a build.log
-          find . -name "*.apk" 2>/dev/null | tee -a build.log || echo "No APK found anywhere" | tee -a build.log
+          echo "Found $APK_COUNT APK file(s)" | tee -a build.log
+          find . -name "*.apk" -type f 2>/dev/null | tee -a build.log
 
-          echo "=== Full app/build directory structure ===" | tee -a build.log
-          find app/build -type d 2>/dev/null | head -60 | tee -a build.log
-
-          # Fail if no APK found AND gradle succeeded
           if [ $BUILD_EXIT -eq 0 ] && [ $APK_COUNT -eq 0 ]; then
-            echo "ERROR: Gradle succeeded but no APK was generated!" | tee -a build.log
+            echo "ERROR: Build succeeded but no APK was generated!" | tee -a build.log
             exit 1
           fi
 
