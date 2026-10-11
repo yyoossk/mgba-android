@@ -47,8 +47,20 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Debug Gradle setup
+        run: |
+          echo "=== Gradle version ===" | tee gradle-debug.log
+          gradle --version 2>&1 | tee -a gradle-debug.log
+          echo "=== GRADLE_HOME ===" | tee -a gradle-debug.log
+          echo $GRADLE_HOME | tee -a gradle-debug.log
+          echo "=== Java version ===" | tee -a gradle-debug.log
+          java -version 2>&1 | tee -a gradle-debug.log
+
       - name: Clean build
-        run: gradle clean
+        run: |
+          echo "=== Starting gradle clean ===" | tee gradle-clean.log
+          gradle clean --stacktrace 2>&1 | tee -a gradle-clean.log || true
+          echo "=== gradle clean completed ===" | tee -a gradle-clean.log
 
       - name: Build
         run: |
