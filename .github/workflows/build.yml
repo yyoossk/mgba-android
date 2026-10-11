@@ -42,7 +42,7 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build
-        run: gradle assembleDebug --stacktrace --info 2>&1 | tee build.log
+        run: gradle assembleDebug --stacktrace 2>&1 | tee build.log && echo "=== BUILD COMPLETE ===" && tail -100 build.log
 
       - name: Check APK location
         if: always()
