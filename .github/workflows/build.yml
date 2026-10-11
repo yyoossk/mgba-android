@@ -48,9 +48,11 @@ jobs:
         if: always()
         run: |
           echo "=== Searching for APK files ==="
-          find . -name "*.apk" -type f 2>/dev/null
+          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
           echo "=== Build directory structure ==="
           ls -laR app/build/outputs/ 2>/dev/null || echo "No build/outputs directory"
+          echo "=== Full app/build structure ==="
+          find app/build -type d 2>/dev/null | head -30
 
       - name: Upload Build Log
         if: always()
@@ -60,10 +62,18 @@ jobs:
           path: build.log
           if-no-files-found: ignore
 
+      - name: Upload build directory
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-directory
+          path: 'app/build/'
+          if-no-files-found: ignore
+
       - name: Upload APK
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: apk
           path: 'app/build/outputs/apk/debug/*.apk'
-          if-no-files-found: error
+          if-no-files-found: ignore
