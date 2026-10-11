@@ -7,7 +7,83 @@ on:
 
 jobs:
   build:
-    uses: yyoossk/android-build-env/.github/workflows/android-build.yml@main
-    with:
-      ndk-version: '25.1.8937393'
-      cmake-version: '3.22.1'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and CMake
+        run: |
+          yes | sdkmanager "ndk;25.1.8937393" "cmake;3.22.1" > /dev/null
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/25.1.8937393" >> $GITHUB_ENV
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build APK
+        run: |
+          if [ -f ./gradlew ]; then
+            chmod +x ./gradlew
+            ./gradlew assembleDebug --stacktrace
+          else
+            gradle assembleDebug --stacktrace
+          fi
+          echo "=== Build artifacts ==="
+          find . -name "*.apk" -type f
+          echo "=== Build outputs directory ==="
+          ls -laR app/build/outputs/ || echo "No outputs directory found"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: apk
+          path: ./apk-artifact
+
+      - name: Prepare APK for release
+        run: |
+          cd ./apk-artifact
+          APK_FILE=$(ls -1 *.apk | head -1)
+          if [ -z "$APK_FILE" ]; then
+            echo "APK not found in artifact"
+            exit 1
+          fi
+          echo "Found APK: $APK_FILE"
+          cp "$APK_FILE" ../app-release.apk
+          ls -lh ../app-release.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./app-release.apk
+          tag_name: build-${{ github.run_number }}
+          name: "Build #${{ github.run_number }} - APK Release"
+          body: |
+            ビルド成功: ${{ github.ref }}
+            コミット: ${{ github.sha }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
