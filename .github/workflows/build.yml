@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     uses: yyoossk/android-build-env/.github/workflows/android-build.yml@main
