@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.mgba.emulator'
     compileSdk 34
+    namespace = 'com.mgba.emulator'
 
     defaultConfig {
-        applicationId 'com.mgba.emulator'
+        applicationId = 'com.mgba.emulator'
         minSdk 24
         targetSdk 34
         versionCode 1
