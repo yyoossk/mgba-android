@@ -45,7 +45,7 @@ jobs:
 
       - name: Build APK with Gradle
         run: |
-          ./gradlew assembleDebug -v
+          gradle assembleDebug -v --stacktrace
 
       - name: Check for APK
         run: |
