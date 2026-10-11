@@ -1,4 +1,4 @@
-// Root build.gradle
+// Root build.gradle - Using buildscript for maximum compatibility
 
 buildscript {
     repositories {
@@ -11,13 +11,13 @@ buildscript {
     }
 }
 
-plugins {
-    id 'com.android.application' version '8.6.0' apply false
-    id 'com.android.library' version '8.6.0' apply false
-    id 'org.jetbrains.kotlin.android' version '2.0.0' apply false
-    id 'org.jetbrains.kotlin.jvm' version '2.0.0' apply false
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
-tasks.register('clean', Delete) {
-    delete layout.buildDirectory
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
