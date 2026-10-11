@@ -89,8 +89,8 @@ jobs:
           rm -rf ~/.gradle/caches 2>&1 | tee -a build.log || true
 
           echo "" | tee -a build.log
-          echo "=== Running :app:assembleDebug ===" | tee -a build.log
-          gradle :app:assembleDebug --stacktrace --no-daemon 2>&1 | tee -a build.log
+          echo "=== Attempting to build ===" | tee -a build.log
+          gradle build --stacktrace --no-daemon 2>&1 | tee -a build.log
           BUILD_EXIT=$?
           echo "" | tee -a build.log
           echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
