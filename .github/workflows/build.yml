@@ -43,13 +43,15 @@ jobs:
           ls -lh ./app-release.apk
 
       - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG_NAME="build-$(date +%Y%m%d-%H%M%S)"
-          NOTES="ビルド成功: ${{ github.ref }}"$'\n'"コミット: ${{ github.sha }}"$'\n'"ビルド日時: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          gh release create "$TAG_NAME" ./app-release.apk \
-            --title "Build #${{ github.run_number }} - APK Release" \
-            --notes "$NOTES" \
-            --draft=false \
-            --prerelease=false
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./app-release.apk
+          tag_name: apk-${{ github.run_number }}
+          name: "APK Build #${{ github.run_number }}"
+          body: |
+            自動生成: mGBA Android APK
+
+            Ref: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
