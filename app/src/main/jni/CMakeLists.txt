@@ -20,10 +20,12 @@ file(GLOB_RECURSE MGBA_CORE_SOURCES
     "mgba/arm/*.c"
 )
 
-# ユーティリティ関数 - util ディレクトリの直下のみ
-file(GLOB MGBA_UTIL_SOURCES
-    "mgba/util/*.c"
-)
+# テストファイルと不要なファイルを除外
+list(FILTER MGBA_CORE_SOURCES EXCLUDE REGEX "test")
+
+# ユーティリティ関数（テストファイル除外）
+file(GLOB MGBA_UTIL_SOURCES "mgba/util/*.c")
+list(FILTER MGBA_UTIL_SOURCES EXCLUDE REGEX "test")
 
 # 全ソースをまとめる
 set(MGBA_ALL_SOURCES
@@ -46,7 +48,8 @@ add_library(mgba-core SHARED
 target_include_directories(mgba-core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/mgba/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/mgba/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/mgba/include/mgba-util
+    ${CMAKE_CURRENT_SOURCE_DIR}/mgba/include/mgba
     ${CMAKE_CURRENT_SOURCE_DIR}/mgba
 )
 
