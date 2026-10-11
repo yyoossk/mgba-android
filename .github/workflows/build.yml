@@ -44,6 +44,14 @@ jobs:
       - name: Build
         run: gradle assembleDebug --stacktrace --info 2>&1 | tee build.log
 
+      - name: Check APK location
+        if: always()
+        run: |
+          echo "=== Searching for APK files ==="
+          find . -name "*.apk" -type f 2>/dev/null
+          echo "=== Build directory structure ==="
+          ls -laR app/build/outputs/ 2>/dev/null || echo "No build/outputs directory"
+
       - name: Upload Build Log
         if: always()
         uses: actions/upload-artifact@v7
@@ -53,8 +61,9 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: apk
-          path: '**/build/outputs/apk/**/*.apk'
+          path: 'app/build/outputs/apk/debug/*.apk'
           if-no-files-found: error
