@@ -49,7 +49,17 @@ jobs:
 
       - name: Build
         run: |
-          echo "=== Starting Gradle build ===" | tee build.log
+          echo "=== Environment variables ===" | tee build.log
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" | tee -a build.log
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_HOME" | tee -a build.log
+          echo "JAVA_HOME=$JAVA_HOME" | tee -a build.log
+          echo "PATH=$PATH" | tee -a build.log
+
+          echo "=== SDK/NDK verification ===" | tee -a build.log
+          ls -la $ANDROID_SDK_ROOT/platforms/ 2>&1 | head -10 | tee -a build.log
+          ls -la $ANDROID_SDK_ROOT/ndk/ 2>&1 | tee -a build.log
+
+          echo "=== Starting Gradle build ===" | tee -a build.log
           gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee -a build.log
           BUILD_EXIT=$?
           echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
