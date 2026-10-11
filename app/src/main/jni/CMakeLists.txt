@@ -1,41 +1,24 @@
 # app/src/main/jni/CMakeLists.txt
-# Minimal JNI wrapper CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.22.1)
-project(mgba-android)
+project(mgba-core)
 
-message(STATUS "Building mGBA JNI wrapper")
-message(STATUS "CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
-message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
-
-# C/C++ standards
+# Enforce C11 standard
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# JNIラッパー
-set(JNI_SOURCES
+# Create the shared library
+add_library(mgba-core SHARED
     mgba_jni.c
 )
 
-# ネイティブライブラリ作成（最小化版）
-add_library(mgba-core SHARED
-    ${JNI_SOURCES}
-)
-
-# Androidネイティブライブラリの依存関係
+# Find Android system libraries
 find_library(log-lib log)
 find_library(android-lib android)
 
-# リンク
-target_link_libraries(mgba-core
-    ${log-lib}
-    ${android-lib}
-)
-
-# 最適化フラグ
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_options(mgba-core PRIVATE -O3)
+# Link libraries
+if(log-lib AND android-lib)
+    target_link_libraries(mgba-core ${log-lib} ${android-lib})
 else()
-    target_compile_options(mgba-core PRIVATE -O0 -g)
+    message(FATAL_ERROR "Required Android libraries not found")
 endif()
