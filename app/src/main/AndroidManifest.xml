@@ -29,7 +29,8 @@
         <!-- テストアクティビティ（ランチャー） -->
         <activity
             android:name=".TestActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -51,15 +52,6 @@
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
             android:windowSoftInputMode="adjustNothing" />
 
-        <!-- ファイルピッカーの種類 -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
 
     </application>
 

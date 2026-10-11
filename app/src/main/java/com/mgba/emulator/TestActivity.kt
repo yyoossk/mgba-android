@@ -2,22 +2,31 @@ package com.mgba.emulator
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 
 /**
- * Test activity to diagnose startup crashes - minimal version
+ * Absolute minimal test activity - no UI, just logging
  */
 class TestActivity : Activity() {
+    companion object {
+        private const val TAG = "mGBA-Test"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            setContentView(R.layout.activity_test)
-        } catch (e: Exception) {
-            // If layout fails, create minimal UI
-            android.util.Log.e("TestActivity", "Layout error: ${e.message}", e)
-            val tv = android.widget.TextView(this)
-            tv.text = "mGBA Emulator Test\nError: ${e.message}"
-            tv.textSize = 20f
-            setContentView(tv)
-        }
+        Log.i(TAG, "=== TestActivity.onCreate() called ===")
+        Log.i(TAG, "Application started successfully!")
+        Log.i(TAG, "Package: ${packageName}")
+        Log.i(TAG, "Version: ${packageManager.getPackageInfo(packageName, 0).versionName}")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.i(TAG, "TestActivity.onStart() called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i(TAG, "TestActivity.onResume() called")
     }
 }
