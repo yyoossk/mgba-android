@@ -43,15 +43,14 @@ jobs:
           ls -lh ./app-release.apk
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./app-release.apk
-          tag_name: build-${{ github.run_number }}
-          name: "Build #${{ github.run_number }} - APK Release"
-          body: |
-            ビルド成功: ${{ github.ref }}
-            コミット: ${{ github.sha }}
-          draft: false
-          prerelease: false
+        run: |
+          TAG_NAME="build-$(date +%Y%m%d-%H%M%S)"
+          gh release create "$TAG_NAME" ./app-release.apk \
+            --title "Build #${{ github.run_number }} - APK Release" \
+            --notes "ビルド成功: ${{ github.ref }}
+コミット: ${{ github.sha }}
+ビルド日時: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" \
+            --draft=false \
+            --prerelease=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
