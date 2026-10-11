@@ -20,7 +20,7 @@ android {
 
         // NDK設定
         ndk {
-            abiFilters = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
 
         // CMakeの設定 - 一時的に無効化（デバッグ用）
@@ -72,7 +72,8 @@ android {
 
     packaging {
         resources {
-            excludes += ['/META-INF/AL2.0', '/META-INF/LGPL2.1']
+            excludes '/META-INF/AL2.0'
+            excludes '/META-INF/LGPL2.1'
         }
     }
 }
