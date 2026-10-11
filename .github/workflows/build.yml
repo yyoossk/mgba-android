@@ -81,17 +81,25 @@ jobs:
           ls -d $ANDROID_SDK_ROOT/cmake/3.22.1 2>&1 | tee -a build.log
 
           echo "" | tee -a build.log
+          echo "=== Clearing gradle cache ===" | tee -a build.log
+          rm -rf ~/.gradle/caches 2>&1 | tee -a build.log || true
+
+          echo "" | tee -a build.log
           echo "=== Running gradle assembleDebug ===" | tee -a build.log
-          gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee -a build.log
-          BUILD_EXIT=$?
+          gradle assembleDebug --stacktrace --no-daemon 2>&1 | head -300 | tee -a build.log
+          BUILD_EXIT=${PIPESTATUS[0]}
           echo "" | tee -a build.log
           echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
 
           echo "" | tee -a build.log
           echo "=== Checking for APK files ===" | tee -a build.log
           APK_COUNT=$(find . -name "*.apk" 2>/dev/null | wc -l)
-          echo "Found $APK_COUNT APK file(s)" | tee -a build.log
+          echo "Found $APK_COUNT APK file(s) anywhere in project" | tee -a build.log
           find . -name "*.apk" -type f 2>/dev/null | tee -a build.log
+
+          echo "" | tee -a build.log
+          echo "=== Checking app/build directory structure ===" | tee -a build.log
+          find app/build -type d -name "*apk*" -o -type d -name "*output*" | tee -a build.log
 
           if [ $BUILD_EXIT -eq 0 ] && [ $APK_COUNT -eq 0 ]; then
             echo "ERROR: Build succeeded but no APK was generated!" | tee -a build.log
