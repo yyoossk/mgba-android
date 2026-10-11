@@ -26,23 +26,20 @@
         android:supportsRtl="true"
         tools:targetApi="31">
 
-        <!-- テストアクティビティ（ランチャー） -->
+        <!-- ゲームローダー（ランチャー） -->
         <activity
-            android:name=".TestActivity"
-            android:exported="true"
-            android:configChanges="orientation|screenSize">
+            android:name=".GameLoaderActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- ゲームローダー（ランチャー） -->
+        <!-- メインエミュレータ画面 -->
         <activity
-            android:name=".GameLoaderActivity"
-            android:exported="true"
-            android:screenOrientation="landscape">
-        </activity>
+            android:name=".MainActivity"
+            android:exported="false" />
 
         <!-- メインエミュレータ画面 -->
         <activity
