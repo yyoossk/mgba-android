@@ -35,7 +35,7 @@ class GameLoaderActivity : Activity() {
 
             // Create button
             val btnSelectFile = Button(this).apply {
-                text = "Select Game ROM"
+                text = getString(R.string.btn_select_game)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -61,7 +61,7 @@ class GameLoaderActivity : Activity() {
             }
 
             // Setup adapter
-            val gameAdapter = GameListAdapter(gameList) { gameInfo ->
+            val gameAdapter = GameListAdapter(gameList, this) { gameInfo ->
                 launchGame(gameInfo.path)
             }
             recyclerView.adapter = gameAdapter
@@ -119,7 +119,8 @@ class GameLoaderActivity : Activity() {
             startActivity(intent)
         } catch (e: Exception) {
             Log.e(TAG, "Error launching game: ${e.message}", e)
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            val errorMsg = getString(R.string.error_prefix) + e.message
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -138,6 +139,7 @@ data class GameInfo(
  */
 class GameListAdapter(
     private val games: List<GameInfo>,
+    private val context: android.content.Context,
     private val onGameClick: (GameInfo) -> Unit
 ) : RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
 
@@ -149,7 +151,8 @@ class GameListAdapter(
 
         fun bind(game: GameInfo) {
             titleView.text = game.name
-            sizeView.text = "${game.size / 1024 / 1024} MB"
+            val mbSuffix = context.getString(R.string.toast_file_size_mb)
+            sizeView.text = "${game.size / 1024 / 1024}$mbSuffix"
             itemView.setOnClickListener {
                 onGameClick(game)
             }

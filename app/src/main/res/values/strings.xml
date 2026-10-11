@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">mGBA Emulator</string>
-    <string name="btn_select_game">Select Game</string>
-    <string name="btn_pause">Pause</string>
-    <string name="btn_save">Save</string>
-    <string name="btn_load">Load</string>
+    <!-- App name -->
+    <string name="app_name">mGBA エミュレータ</string>
+
+    <!-- GameLoaderActivity -->
+    <string name="btn_select_game">ゲームを選択</string>
+    <string name="toast_file_size_mb"> MB</string>
+    <string name="error_prefix">エラー: </string>
+
+    <!-- MainActivity -->
+    <string name="btn_pause">一時停止</string>
+    <string name="btn_resume">再開</string>
+    <string name="btn_save">セーブ</string>
+    <string name="btn_load">ロード</string>
+    <string name="emulation_started">エミュレーション開始</string>
+    <string name="emulation_failed">エミュレーション開始失敗</string>
+    <string name="rom_load_failed">ROMの読み込みに失敗しました</string>
+    <string name="game_saved">ゲームをセーブしました</string>
+    <string name="save_failed">セーブに失敗しました</string>
+    <string name="game_loaded">ゲームをロードしました</string>
+    <string name="load_failed">ロードに失敗しました</string>
 </resources>

@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         // エミュレータコア初期化
         emulatorCore = EmulatorCore()
         if (!emulatorCore.initialize()) {
-            Toast.makeText(this, "Failed to initialize emulator", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.emulation_failed), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -93,17 +93,17 @@ class MainActivity : AppCompatActivity() {
                     if (emulatorCore.start()) {
                         Toast.makeText(
                             this@MainActivity,
-                            "Emulation started",
+                            getString(R.string.emulation_started),
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        Toast.makeText(this@MainActivity, "Failed to start emulation", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, getString(R.string.emulation_failed), Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this@MainActivity, "Failed to load ROM", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.rom_load_failed), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "${getString(R.string.error_prefix)}${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -161,11 +161,11 @@ class MainActivity : AppCompatActivity() {
     private fun togglePause() {
         lifecycleScope.launch {
             val isPaused = emulatorCore.pause()
-            btnPause.text = if (isPaused) "Resume" else "Pause"
+            btnPause.text = if (isPaused) getString(R.string.btn_resume) else getString(R.string.btn_pause)
 
             if (isPaused) {
                 emulatorCore.resume()
-                btnPause.text = "Pause"
+                btnPause.text = getString(R.string.btn_pause)
             }
         }
     }
@@ -178,12 +178,12 @@ class MainActivity : AppCompatActivity() {
                 val savePath = "$saveDir/save_slot_1.sav"
 
                 if (emulatorCore.saveState(savePath)) {
-                    Toast.makeText(this@MainActivity, "Game saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.game_saved), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@MainActivity, "Save failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "${getString(R.string.error_prefix)}${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -195,12 +195,12 @@ class MainActivity : AppCompatActivity() {
                 val savePath = "$saveDir/save_slot_1.sav"
 
                 if (emulatorCore.loadState(savePath)) {
-                    Toast.makeText(this@MainActivity, "Game loaded", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.game_loaded), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@MainActivity, "Load failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.load_failed), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "${getString(R.string.error_prefix)}${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
