@@ -70,13 +70,19 @@ jobs:
           ls -la $ANDROID_SDK_ROOT/platforms/ 2>&1 | head -10 | tee -a build.log
           ls -la $ANDROID_SDK_ROOT/ndk/ 2>&1 | tee -a build.log
 
-          echo "=== Starting Gradle build with detailed output ===" | tee -a build.log
-          gradle assembleDebug --stacktrace --no-daemon --debug 2>&1 | tee -a build.log
+          echo "=== Available gradle tasks ===" | tee -a build.log
+          gradle tasks --no-daemon 2>&1 | head -50 | tee -a build.log
+
+          echo "=== Starting Gradle assembleDebug ===" | tee -a build.log
+          gradle assembleDebug --stacktrace --no-daemon -i 2>&1 | tee -a build.log
           BUILD_EXIT=$?
           echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
 
-          echo "=== Checking gradle output for errors ===" | tee -a build.log
-          grep -iE "ERROR|FAIL|EXCEPTION|error:" build.log | head -50 | tee -a build.log
+          echo "=== Last 50 lines of gradle output ===" | tee -a build.log
+          tail -50 build.log | tee -a build.log
+
+          echo "=== Checking for specific errors ===" | tee -a build.log
+          grep -iE "ERROR:|FAILED|error generating|error compiling|cannot find|could not" build.log | head -20 | tee -a build.log
 
           # APK 確認
           echo "=== APK generation check ===" | tee -a build.log
