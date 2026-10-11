@@ -27,7 +27,7 @@ jobs:
           echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/25.1.8937393" >> $GITHUB_ENV
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@latest
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build APK
         run: |
