@@ -25,7 +25,7 @@ jobs:
 
       - name: Install NDK / CMake
         env:
-          NDK: '27.0.12212155'
+          NDK: '26.1.10909125'
           CMAKE: '3.22.1'
         run: |
           set -o pipefail
