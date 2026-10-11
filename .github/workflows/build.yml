@@ -43,14 +43,13 @@ jobs:
           ls -lh ./app-release.apk
 
       - name: Create GitHub Release
-        run: |
-          TAG_NAME="build-$(date +%Y%m%d-%H%M%S)"
-          gh release create "$TAG_NAME" ./app-release.apk \
-            --title "Build #${{ github.run_number }} - APK Release" \
-            --notes "ビルド成功: ${{ github.ref }}
-コミット: ${{ github.sha }}
-ビルド日時: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" \
-            --draft=false \
-            --prerelease=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="build-$(date +%Y%m%d-%H%M%S)"
+          NOTES="ビルド成功: ${{ github.ref }}"$'\n'"コミット: ${{ github.sha }}"$'\n'"ビルド日時: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          gh release create "$TAG_NAME" ./app-release.apk \
+            --title "Build #${{ github.run_number }} - APK Release" \
+            --notes "$NOTES" \
+            --draft=false \
+            --prerelease=false
