@@ -39,11 +39,17 @@ jobs:
           echo "=== Android SDK contents ==="
           ls -la "$ANDROID_SDK_ROOT/" | head -20
 
+      - name: Clean Gradle Cache
+        run: |
+          rm -rf ~/.gradle
+          mkdir -p ~/.gradle
+
       - name: Create gradle.properties
         run: |
           cat > ~/.gradle/gradle.properties << 'EOF'
-          org.gradle.jvmargs=-Xmx4096m
+          org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m
           org.gradle.daemon=false
+          org.gradle.offline=false
           android.useAndroidX=true
           android.enableJetifier=true
           EOF
@@ -51,7 +57,9 @@ jobs:
 
       - name: Build APK
         run: |
-          gradle assembleDebug --info 2>&1 | tee build.log
+          gradle --version
+          gradle clean
+          gradle assembleDebug --info 2>&1 | tee build.log || true
 
       - name: Check for APK
         if: always()
