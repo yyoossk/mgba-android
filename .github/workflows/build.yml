@@ -86,8 +86,8 @@ jobs:
 
           echo "" | tee -a build.log
           echo "=== Running gradle assembleDebug ===" | tee -a build.log
-          gradle assembleDebug --stacktrace --no-daemon 2>&1 | head -300 | tee -a build.log
-          BUILD_EXIT=${PIPESTATUS[0]}
+          gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee -a build.log
+          BUILD_EXIT=$?
           echo "" | tee -a build.log
           echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
 
