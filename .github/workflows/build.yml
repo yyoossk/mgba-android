@@ -50,9 +50,14 @@ jobs:
       - name: Build
         run: |
           echo "=== Starting Gradle build ===" | tee build.log
-          gradle assembleDebug --stacktrace --no-daemon -x lint 2>&1 | tee -a build.log
+          gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee -a build.log
           BUILD_EXIT=$?
           echo "=== Gradle exit code: $BUILD_EXIT ===" | tee -a build.log
+
+          # APK 確認
+          echo "=== APK generation check ===" | tee -a build.log
+          find app/build/outputs -name "*.apk" 2>/dev/null | tee -a build.log || echo "No APK found" | tee -a build.log
+
           exit $BUILD_EXIT
 
       - name: Show build result
