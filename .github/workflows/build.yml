@@ -7,8 +7,54 @@ on:
 
 jobs:
   build:
-    uses: yyoossk/android-build-env/.github/workflows/android-build.yml@main
-    with:
-      gradle-task: assembleDebug
-      ndk-version: '25.1.8937393'
-      cmake-version: '3.22.1'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install NDK / CMake
+        env:
+          NDK: '25.1.8937393'
+          CMAKE: '3.22.1'
+        run: |
+          pkgs=()
+          [ -n "$NDK" ] && pkgs+=("ndk;$NDK")
+          [ -n "$CMAKE" ] && pkgs+=("cmake;$CMAKE")
+          yes | sdkmanager "${pkgs[@]}" > /dev/null
+          if [ -n "$NDK" ]; then
+            echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.7'
+
+      - name: Build
+        run: gradle assembleDebug --stacktrace --info 2>&1 | tee build.log
+
+      - name: Upload Build Log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: ignore
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: apk
+          path: '**/build/outputs/apk/**/*.apk'
+          if-no-files-found: error
