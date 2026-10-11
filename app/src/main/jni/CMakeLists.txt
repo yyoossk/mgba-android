@@ -1,8 +1,12 @@
 # app/src/main/jni/CMakeLists.txt
-# Simplified CMakeLists.txt with minimal dependencies
+# Minimal JNI wrapper CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.22.1)
 project(mgba-android)
+
+message(STATUS "Building mGBA JNI wrapper")
+message(STATUS "CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
+message(STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
 
 # C/C++ standards
 set(CMAKE_C_STANDARD 11)
