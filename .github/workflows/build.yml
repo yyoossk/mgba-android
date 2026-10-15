@@ -33,11 +33,21 @@ jobs:
           mkdir -p release && cp "$APK" release/mgba-emulator.apk
           echo "tag=apk-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
-      - name: Create release with raw APK
+      - name: Create release with raw APK (REST API)
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.find.outputs.tag }}
         run: |
-          gh release create "${{ steps.find.outputs.tag }}" release/mgba-emulator.apk \
-            --title "mGBA APK ${{ steps.find.outputs.tag }}" \
-            --notes "Commit: ${{ github.sha }}" \
-            --target "${{ github.sha }}"
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          REL=$(gh api -X POST "repos/$REPO/releases" \
+            -f tag_name="$TAG" -f target_commitish="${{ github.sha }}" \
+            -f name="mGBA APK $TAG" -f body="Commit: ${{ github.sha }}" \
+            --jq '.id')
+          UPLOAD_URL="https://uploads.github.com/repos/$REPO/releases/$REL/assets?name=mgba-emulator.apk"
+          curl -sSf -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            --data-binary @release/mgba-emulator.apk "$UPLOAD_URL" > /dev/null
+          echo "Release: https://github.com/$REPO/releases/tag/$TAG"
+          echo "Direct APK: https://github.com/$REPO/releases/download/$TAG/mgba-emulator.apk"
