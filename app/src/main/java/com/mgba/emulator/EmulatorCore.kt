@@ -84,8 +84,9 @@ class EmulatorCore {
             initialized = (result == 0)
             Log.i(TAG, "Emulator initialized: $initialized")
             initialized
-        } catch (e: Exception) {
-            Log.e(TAG, "Initialization failed", e)
+        } catch (e: Throwable) {
+            // UnsatisfiedLinkError はExceptionではないため Throwable で捕捉する
+            Log.e(TAG, "Initialization failed (native core missing?)", e)
             false
         }
     }
@@ -98,7 +99,7 @@ class EmulatorCore {
             val result = nativeLoadROM(romPath)
             Log.i(TAG, "ROM loaded: $romPath (result=$result)")
             result == 0
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "ROM loading failed: $romPath", e)
             false
         }
