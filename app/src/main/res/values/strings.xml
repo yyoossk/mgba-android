@@ -7,6 +7,7 @@
     <string name="btn_select_game">ゲームを選択</string>
     <string name="toast_file_size_mb"> MB</string>
     <string name="error_prefix">エラー: </string>
+    <string name="rom_added">ROMを追加しました</string>
 
     <!-- MainActivity -->
     <string name="btn_pause">一時停止</string>

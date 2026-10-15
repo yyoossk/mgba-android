@@ -22,6 +22,43 @@ class GameLoaderActivity : Activity() {
     }
 
     private val gameList = mutableListOf<GameInfo>()
+    private var gameAdapter: GameListAdapter? = null
+    private val requestRomPick = 1001
+
+    private fun openRomPicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+        }
+        startActivityForResult(intent, requestRomPick)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != requestRomPick || resultCode != RESULT_OK) return
+        val uri = data?.data ?: return
+        try {
+            val name = contentResolver.query(uri, null, null, null, null)?.use { c ->
+                val idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                if (c.moveToFirst() && idx >= 0) c.getString(idx) else null
+            } ?: "game_${System.currentTimeMillis()}.gba"
+
+            val romDir = getExternalFilesDir("roms") ?: throw IllegalStateException("roms dir unavailable")
+            romDir.mkdirs()
+            val dest = java.io.File(romDir, name)
+            contentResolver.openInputStream(uri)?.use { input ->
+                dest.outputStream().use { output -> input.copyTo(output) }
+            } ?: throw IllegalStateException("cannot open input stream")
+
+            loadGameList()
+            gameAdapter?.notifyDataSetChanged()
+            Toast.makeText(this, getString(R.string.rom_added), Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "ROM import failed", e)
+            Toast.makeText(this, getString(R.string.error_prefix) + e.message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +79,7 @@ class GameLoaderActivity : Activity() {
                 )
                 setOnClickListener {
                     Log.i(TAG, "Select game button clicked")
-                    Toast.makeText(
-                        this@GameLoaderActivity,
-                        "ROM selection coming soon",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    openRomPicker()
                 }
             }
 
@@ -65,6 +98,7 @@ class GameLoaderActivity : Activity() {
                 launchGame(gameInfo.path)
             }
             recyclerView.adapter = gameAdapter
+            this.gameAdapter = gameAdapter
 
             // Add views
             mainContainer.addView(btnSelectFile)

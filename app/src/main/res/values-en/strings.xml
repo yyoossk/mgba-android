@@ -7,6 +7,7 @@
     <string name="btn_select_game">Select Game</string>
     <string name="toast_file_size_mb"> MB</string>
     <string name="error_prefix">Error: </string>
+    <string name="rom_added">ROM added</string>
 
     <!-- MainActivity -->
     <string name="btn_pause">Pause</string>
