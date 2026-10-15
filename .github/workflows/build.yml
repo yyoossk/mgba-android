@@ -5,9 +5,39 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     uses: yyoossk/android-build-env/.github/workflows/android-build.yml@main
     with:
       ndk-version: '27.0.12077973'
       cmake-version: '3.22.1'
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: apk
+          path: apk-out
+
+      - name: Locate APK
+        id: find
+        run: |
+          APK=$(find apk-out -name '*.apk' | head -n 1)
+          if [ -z "$APK" ]; then echo "APK not found"; find apk-out; exit 1; fi
+          mkdir -p release && cp "$APK" release/mgba-emulator.apk
+          echo "tag=apk-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Create release with raw APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.find.outputs.tag }}" release/mgba-emulator.apk \
+            --title "mGBA APK ${{ steps.find.outputs.tag }}" \
+            --notes "Commit: ${{ github.sha }}" \
+            --target "${{ github.sha }}"
